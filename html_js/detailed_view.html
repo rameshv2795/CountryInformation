@@ -34,7 +34,7 @@
 	</head>
 	
 	<body>
-									
+						
 		<!--class defines a style, container a bootstrap class -->
 		<nav class="navbar navbar-inverse" style="background-color: #0B61AF;">
 			<div class="container-fluid">
@@ -58,26 +58,26 @@
 					<!--<h1 id="test_print"></h1> -->
 					<table class="table table-striped" id="main_display">
 						<thead>
-							<tr>
+							<tr id="capital">
 								<th> Capital </th>
 							</tr>
-							<tr>
+							<tr id="population">
 								<th> Population </th>
 							</tr>							
-							<tr>
+							<tr id="region">
 								<th> Region </th>
 							</tr>							
-							<tr>
+							<tr id="subregion">
 								<th> Subregion </th>
 							</tr>							
-							<tr>
-								<th> Timezone </th>
+							<tr id="timezones">
+								<th style="vertical-align: middle"> Timezone </th>
 							</tr>
-							<tr>
+							<tr id="currencies">
 								<th> Currency </th>
 							</tr>	
-							<tr>
-								<th> Official Native Language </th>
+							<tr id="languages">
+								<th> Languages </th>
 							</tr>									
 						</thead>
 					</table>
@@ -86,7 +86,7 @@
 			</div>
 			<div class="row ce">
 				<div class="col-6">
-					<div id="map_id" style="background-color:green;"></div>
+					<div id="map_id" style="background-color:green;width:400px;height:400px "></div>
 				</div>	
 			</div>
 		</div>		
@@ -108,23 +108,27 @@
 		</footer>
 		
 		<script>
-			var url_full_name = "https://restcountries.eu/rest/v2/name/" + localStorage.cname + "?fullText=true";
-			var request = new XMLHttpRequest();
-			/*readyState is https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState*/
-			/*onreadystatechange called when readyState changes*/
-			request.onreadystatechange = function(){
-				if(this.readyState == 4 /*4 is DONE*/ && this.status == 200){
-				var data = JSON.parse(this.responseText);
-				parse(data);
+			connect();
+			function connect(){
+				var url_full_name = "https://restcountries.eu/rest/v2/name/" + localStorage.cname + "?fullText=true";
+				var request = new XMLHttpRequest();
+				/*readyState is https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState*/
+				/*onreadystatechange called when readyState changes*/
+				request.onreadystatechange = function(){
+					if(this.readyState == 4 /*4 is DONE*/ && this.status == 200){
+					var data = JSON.parse(this.responseText);
+					parse(data);
+					}
 				}
-			}
-						
-			request.open("GET",url_full_name,true);
-			request.send();
+				request.open("GET",url_full_name,true);
+				request.send();
+			}			
+
 		
 			function parse(data){
 				//alert(localStorage.cname);
-				var r, table, cell, cell2, cell3;
+				var r, table, cell, cell2, cell3, lat, lon;
+				//var row = document.getElementById("myRow");
 				table = document.getElementById("detail_display");
 				var i = 0;
 				var flag = data[0].alpha2Code;
@@ -133,18 +137,75 @@
 				document.getElementById("chname").innerHTML = data[0].name;
 				document.getElementById("flag_id").classList.add("flag-"+flag);
 				
+				set_table_desc(data) //Detailed View Information to Table
+				
+				/*set location of google map depending on country*/
+				lat = Number(data[0].latlng[0]); 
+				lon = Number(data[0].latlng[1]); 
+				myMap(lat,lon); 
 			//document.write(request.status);
 			}
-			function myMap() {
+			function myMap(lat,lon) {
+				if(typeof lat === 'undefined'){
+					lat = 1;
+				}	
+				if(typeof lon === 'undefined'){
+					lon = 1;			
+				}			
 				var mapCanvas = document.getElementById("map_id");
 				var mapOptions = {
-					center: new google.maps.LatLng(51.5, -0.2),
-					zoom: 10
+					center: new google.maps.LatLng(lat, lon),
+					zoom: 5
 				};
 				var map = new google.maps.Map(mapCanvas, mapOptions);
 			}
+			
+			function set_table_desc(data){
+				/*Detailed View Information to Table*/
+				var row_d, cell_d;
+
+				row_d = document.getElementById("capital");
+				cell_d = row_d.insertCell(1);
+				cell_d.innerHTML = data[0].capital;	
+				
+				row_d = document.getElementById("population");
+				cell_d = row_d.insertCell(1);
+				cell_d.innerHTML = data[0].population;	
+				
+				row_d = document.getElementById("region");
+				cell_d = row_d.insertCell(1);
+				cell_d.innerHTML = data[0].region;
+				
+				row_d = document.getElementById("subregion");
+				cell_d = row_d.insertCell(1);
+				cell_d.innerHTML = data[0].subregion;	
+				
+				row_d = document.getElementById("timezones");
+				cell_d = row_d.insertCell(1);
+				var all_timezones = "";
+				for(var i = 0; i < data[0].timezones.length; i++){ //get all time zones
+					all_timezones = all_timezones + data[0].timezones[i] + ", ";
+				}
+				cell_d.innerHTML = all_timezones;
+				
+				row_d = document.getElementById("currencies");
+				cell_d = row_d.insertCell(1);
+				var all_currencies = "";
+				for(var i = 0; i < data[0].currencies.length; i++){ //get all time zones
+					all_currencies = all_currencies + data[0].currencies[i].name + " (" + data[0].currencies[i].symbol + ")" + ", ";
+				}				
+				cell_d.innerHTML = all_currencies;
+				
+				row_d = document.getElementById("languages");
+				cell_d = row_d.insertCell(1);
+				var all_languages = "";
+				for(var i = 0; i < data[0].currencies.length; i++){ //get all time zones
+					all_languages = all_languages + data[0].languages[i].name + " (" + data[0].languages[i].nativeName + ")" + ", ";
+				}				
+				cell_d.innerHTML = all_languages;			
+			}
 		</script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByqnvYEmVp7fNkiYtBEAtvGIb1WEtkFo0&callback=myMap"></script>		
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByqnvYEmVp7fNkiYtBEAtvGIb1WEtkFo0&callback=myMap"></script>		
 
 
 
