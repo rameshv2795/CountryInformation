@@ -7,7 +7,12 @@
 
 	
 	<head>
-	
+		<style>
+			.padding_search {
+				padding: 20px;
+			}
+		</style>
+		
 		<title>
 		Country Information
 		</title>
@@ -22,6 +27,7 @@
 	</head>
 	
 	<body>
+		
 		<!-- <img src="../css/blank.gif" class="flag flag-cz" alt="Czech Republic" /> -->
 		<!--class defines a style, container a bootstrap class -->
 		<nav class="navbar navbar-inverse" style="background-color: #0B61AF;">
@@ -30,19 +36,42 @@
 					<a class="navbar-brand" href="home.html"><font color="white">Countries</font></a>
 				</div>
 			</div>
-		</nav>		
+		</nav>	
+
+		
+
 		<div class="container">
-			<!--<h1> Country Information </h1> -->
-			<!--<h1 id="test_print"></h1> -->
-			<table class="table table-striped" id="main_display">
-				<thead>
-					<tr>
-						<th> Country </th>
-						<th> Capital </th>
-						<th> Population </th>
-					</tr>
-				</thead>
-			</table>
+			
+			<div class="row padding_search">
+				<div class="col-6">
+					<div class="form-group">
+					  <select class="form-control" id="region_id">
+						<option>Africa</option>
+						<option>Americas</option>
+						<option>Asia</option>
+						<option>Europe</option>
+						<option>Oceania</option>						
+					  </select>			  
+					</div>
+				</div>
+				<div class="col-6">
+					<input type="text" name="search" placeholder="Search">  
+					<p> <span class="glyphicon glyphicon-search"></span> </p>
+				</div>				
+			</div>
+			<div class="row" style="background-color:#FCFDFF;">
+					<!--<h1> Country Information </h1> -->
+					<!--<h1 id="test_print"></h1> -->
+					<table class="table table-striped" id="main_display">
+						<thead>
+							<tr>
+								<th> Country </th>
+								<th> Capital </th>
+								<th> Population </th>
+							</tr>
+						</thead>
+					</table>
+				</div>	
 				  
 		</div>
 		
