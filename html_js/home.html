@@ -46,6 +46,7 @@
 				<div class="col-6">
 					<div class="form-group">
 					  <select class="form-control" id="region_id">
+						<option>Select Region</option>					  
 						<option>Africa</option>
 						<option>Americas</option>
 						<option>Asia</option>
@@ -91,7 +92,19 @@
 				parse(data);
 				}
 			}
-						
+			$(document).ready(function(){ //ajax for dropdown region
+				$('#region_id').on('change', function() {
+					
+					let tr = 0;
+					let table_d = document.getElementById("main_display");
+					//alert(table_d.rows.length);
+					for(tr = table_d.rows.length; tr  > 1; tr--){ //delete rows except header
+						table_d.deleteRow(1);
+					}
+					request.open("GET",url_all,true);
+					request.send();
+				});
+			});								
 			request.open("GET",url_all,true);
 			request.send();
 		
@@ -103,25 +116,30 @@
 				for(i = 0; i < data.length; i++){
 					//alert(data[0].name);
 					//document.getElementById("test_print").innerHTML = i;
-					r = table.insertRow(-1);
-					cell = r.insertCell(0);
-					cell.innerHTML = "<a id='\"" + data[i].name + "\"'  href='detailed_view.html' >" + data[i].name + "</a>";
+					let r_select = document.getElementById("region_id").value;
+					r_select = r_select.replace(/['"]+/g, '');
 					//localStorage.setItem("cname",data[i].name);
 					//cell.innerHTML = data[i].name; //data[0].name
 					//var link = document.createTextNode("");
 					 //var row = "<b>df</b>";
 					 //cell.append(row);
-					
-					
-					cell2 = r.insertCell(1);
-					cell2.innerHTML = data[i].capital;
-					cell3 = r.insertCell(2);
-					cell3.innerHTML = data[i].population;					
+					//alert(r_select);
+					//alert(r_select);
+					//alert(r_select + " === " + data[i].region);
+					if(data[i].region === r_select || r_select === "Select Region"){
+						r = table.insertRow(-1);
+						cell = r.insertCell(0);						
+						cell.innerHTML = "<a id='\"" + data[i].name + "\"'  href='detailed_view.html' >" + data[i].name + "</a>";					
+						cell2 = r.insertCell(1);
+						cell2.innerHTML = data[i].capital;
+						cell3 = r.insertCell(2);
+						cell3.innerHTML = data[i].population;	
+					}
 				}
 			//document.write(request.status);
 			
 				$("a").click(function(){ //get country name on click
-					var country = this.id;
+					let country = this.id;
 					/*
 					Regular Expression Syntax: /pattern/modifiers;
 					/g is global match
