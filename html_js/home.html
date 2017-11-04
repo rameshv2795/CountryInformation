@@ -56,8 +56,9 @@
 					</div>
 				</div>
 				<div class="col-6">
-					<input type="text" name="search" placeholder="Search">  
+					<input id="search_input"type="text" name="search" placeholder="Search">  
 					<p> <span class="glyphicon glyphicon-search"></span> </p>
+					<button id="search_sub"type="submit"> Search </button>
 				</div>				
 			</div>
 			<div class="row" style="background-color:#FCFDFF;">
@@ -104,6 +105,19 @@
 					request.open("GET",url_all,true);
 					request.send();
 				});
+				
+				$("#search_sub").click(function(){
+					
+					let tr = 0;
+					let table_d = document.getElementById("main_display");					
+					let search_var = document.getElementById("search_input");
+					for(tr = table_d.rows.length; tr  > 1; tr--){ //delete rows except header
+						table_d.deleteRow(1);
+					}					
+					request.open("GET",url_all,true);
+					request.send();					
+					
+				});
 			});								
 			request.open("GET",url_all,true);
 			request.send();
@@ -112,12 +126,22 @@
 				var r, table, cell, cell2, cell3;
 				table = document.getElementById("main_display");
 				var i = 0;
-				
+				let r_select = document.getElementById("region_id").value;
+				r_select = r_select.replace(/['"]+/g, '');
+				let s_select = document.getElementById("search_input").value;
+				s_select = s_select.replace(/['"]+/g, '');	
+				let is_searching = true;
+				var search_term = new RegExp(s_select ,"i");
+				//var search_term = /Mali/i;
+				//search_term = "/" + search_term + "/i";
+				//alert(search_term);
+				if(s_select === null || s_select.match(/^ *$/) !== null){ //search field blank
+					is_searching = false;
+				}				
 				for(i = 0; i < data.length; i++){
 					//alert(data[0].name);
 					//document.getElementById("test_print").innerHTML = i;
-					let r_select = document.getElementById("region_id").value;
-					r_select = r_select.replace(/['"]+/g, '');
+
 					//localStorage.setItem("cname",data[i].name);
 					//cell.innerHTML = data[i].name; //data[0].name
 					//var link = document.createTextNode("");
@@ -127,13 +151,28 @@
 					//alert(r_select);
 					//alert(r_select + " === " + data[i].region);
 					if(data[i].region === r_select || r_select === "Select Region"){
-						r = table.insertRow(-1);
-						cell = r.insertCell(0);						
-						cell.innerHTML = "<a id='\"" + data[i].name + "\"'  href='detailed_view.html' >" + data[i].name + "</a>";					
-						cell2 = r.insertCell(1);
-						cell2.innerHTML = data[i].capital;
-						cell3 = r.insertCell(2);
-						cell3.innerHTML = data[i].population;	
+						
+						if(!is_searching){
+							
+							r = table.insertRow(-1);
+							cell = r.insertCell(0);						
+							cell.innerHTML = "<a id='\"" + data[i].name + "\"'  href='detailed_view.html' >" + data[i].name + "</a>";					
+							cell2 = r.insertCell(1);
+							cell2.innerHTML = data[i].capital;
+							cell3 = r.insertCell(2);
+							cell3.innerHTML = data[i].population;
+						}
+						else if(data[i].name.search(search_term) != -1){
+								//alert(search_term);
+								r = table.insertRow(-1);
+								cell = r.insertCell(0);						
+								cell.innerHTML = "<a id='\"" + data[i].name + "\"'  href='detailed_view.html' >" + data[i].name + "</a>";					
+								cell2 = r.insertCell(1);
+								cell2.innerHTML = data[i].capital;
+								cell3 = r.insertCell(2);
+								cell3.innerHTML = data[i].population;						
+						
+						}
 					}
 				}
 			//document.write(request.status);
@@ -142,7 +181,7 @@
 					let country = this.id;
 					/*
 					Regular Expression Syntax: /pattern/modifiers;
-					/g is global match
+					/g is global match (find all matches instead of stopping after first)
 					*/
 					country = country.replace(/['"]+/g, '');
 					localStorage.setItem("cname",country);
