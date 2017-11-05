@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<!-- http://paletton.com/#uid=13z0u0kq6BTfPNvlhG+yVzvzgoO -->
+
+
+	
+	<head>
+		<style>
+			.ce{
+				text-align: center;
+			}
+			.center_inline{
+				display: inline-block;
+			}	
+			.map_layout{
+				background-color: green;
+				align: center;
+			}
+		
+		</style>
+		<title>
+		Country Information
+		</title>
+		<!-- meta tag: info about data not displayed on page, machine parsable -->
+		<!-- charset: character set/encoding -->
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/flags.css">
+		<link rel="stylesheet" type="text/css" href="../css/flags.min.css">	
+	</head>
+	
+	<body>
+						
+		<!--class defines a style, container a bootstrap class -->
+		<nav class="navbar navbar-inverse" style="background-color: #0B61AF;">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="home.html"><font color="white">Countries</font></a>
+				</div>
+			</div>
+		</nav>
+			<div class="row padding_search">
+				<div class="col-6">
+					<div class="form-group">
+					  <select class="form-control" id="country1">
+						<option>Select Country</option>
+						
+					  </select>			  
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="form-group">
+					  <select class="form-control" id="country2">
+						<option>Select Country</option>
+												
+					  </select>			  
+					</div>
+				</div>			
+			</div>
+		<div class="row ce">
+			<div class="col-6">
+				<div class="container">
+					<!--<h1> Country Information </h1> -->
+					<!--<h1 id="test_print"></h1> -->
+					<table class="table table-striped" id="selection1">
+						<thead>
+							<tr id="capital_compare">
+								<th class="text-left"> Capital </th>
+							</tr>
+							<tr id="population">
+								<th class="text-left"> Population </th>
+							</tr>							
+							<tr id="region">
+								<th class="text-left"> Region </th>
+							</tr>							
+							<tr id="subregion">
+								<th class="text-left"> Subregion </th>
+							</tr>							
+							<tr id="timezones">
+								<th class="text-left"> Timezone </th>
+							</tr>
+							<tr id="currencies">
+								<th class="text-left"> Currency </th>
+							</tr>	
+							<tr id="languages">
+								<th class="text-left"> Languages </th>
+							</tr>	
+							<tr id="area">
+								<th class="text-left"> Area </th>
+							</tr>							
+						</thead>
+					</table>
+						  
+				</div>
+			</div>
+			
+			<div class="col-6">
+				<div class="container">
+					<!--<h1> Country Information </h1> -->
+					<!--<h1 id="test_print"></h1> -->
+					<table class="table table-striped" id="selection2">
+						<thead>
+							<tr id="capital2">
+								<th class="text-right"> Capital </th>
+							</tr>
+							<tr id="population2">
+								<th class="text-right"> Population </th>
+							</tr>							
+							<tr id="region2">
+								<th class="text-right"> Region </th>
+							</tr>							
+							<tr id="subregion2">
+								<th class="text-right"> Subregion </th>
+							</tr>							
+							<tr id="timezones2">
+								<th class="text-right"> Timezone </th>
+							</tr>
+							<tr id="currencies2">
+								<th class="text-right"> Currency </th>
+							</tr>	
+							<tr id="languages2">
+								<th class="text-right"> Languages </th>
+							</tr>		
+							<tr id="area2">
+								<th class="text-right"> Area </th>
+							</tr>							
+						</thead>
+					</table>
+						  
+				</div>
+			</div>
+			
+		</div>		
+
+
+		
+		<footer class="container-fluid text-center" style="background-color:#0B61AF;">
+			<p><font color="white">Footer</font></p>
+		</footer>
+		
+		<script>
+			var isCountry2 = 0;		//global variable (find better method in future)
+			connect();
+			function connect(){
+
+				var url_all = "https://restcountries.eu/rest/v2/all";
+				var request = new XMLHttpRequest();
+				/*readyState is https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState*/
+				/*onreadystatechange called when readyState changes*/
+				
+				request.onreadystatechange = function(){
+					if(this.readyState == 4 /*4 is DONE*/ && this.status == 200){
+					var data = JSON.parse(this.responseText);
+					parse(data);
+					}
+				}
+				
+				request.open("GET",url_all,true);
+				request.send();				
+				
+				$(document).ready(function(){ //ajax for dropdown region
+					$('#country1').on('change', function() {
+						let c1 = document.getElementById("country1").value;
+						c1 = c1.replace(/['"]+/g, '');
+						//alert(c1);
+						url_c = "https://restcountries.eu/rest/v2/name/" + c1 + "?fullText=true";
+						isCountry2 = 1;
+						var row_delete;
+						let i;
+						if(document.getElementById("selection1").rows[0].cells.length === 2){
+							for(i = 0; i < 8; i++){ //clear data for new country
+								row_delete = document.getElementById("selection1").rows[i];
+								row_delete.deleteCell(1);
+							}
+						}
+						request.open("GET",url_c,true);
+						request.send();
+					});
+					$('#country2').on('change', function() {
+						let c1 = document.getElementById("country2").value;
+						c1 = c1.replace(/['"]+/g, '');
+						//alert(c1);
+						url_c = "https://restcountries.eu/rest/v2/name/" + c1 + "?fullText=true";
+						isCountry2 = 2;
+						var row_delete;
+						
+						if(document.getElementById("selection2").rows[0].cells.length === 2){
+							for(i = 0; i < 8; i++){ //clear data for new country
+								row_delete = document.getElementById("selection2").rows[i];
+								row_delete.deleteCell(0);
+							}
+						}						
+						
+						request.open("GET",url_c,true);
+						request.send();
+					});					
+					
+				});					
+				
+				//request.open("GET",url_full_name,true);
+				//request.send();
+			}			
+
+		
+			function parse(data){
+				//alert(isCountry2);
+				//alert(localStorage.cname);
+				var r, table, cell, cell2, cell3, lat, lon;
+				//var row = document.getElementById("myRow");
+				table = document.getElementById("detail_display");
+				var i = 0;
+				//document.getElementById("selection1").innerHTML = data[0].name;
+				//document.getElementById("flag_id").classList.add("flag-"+flag);
+				
+				set_table_desc(data) //Detailed View Information to Table
+				
+				/*set location of google map depending on country*/
+
+			//document.write(request.status);
+			}
+
+			
+			function set_table_desc(data){
+				/*Detailed View Information to Table*/
+				var row_d, cell_d;
+				
+				if(isCountry2 === 0){ //fill dropdown countries
+					
+					var add_option; 
+					
+					var dropdownfill = document.getElementById("country1");
+					for(i = 0; i < data.length; i++){
+						add_option = document.createElement("option");
+						add_option.text = data[i].name;
+						dropdownfill.add(add_option);
+					}
+					
+					dropdownfill = document.getElementById("country2");
+					for(i = 0; i < data.length; i++){
+						add_option = document.createElement("option");
+						add_option.text = data[i].name;
+						dropdownfill.add(add_option);
+					}
+				
+				}
+				else if(isCountry2 === 1){
+					
+					row_d = document.getElementById("capital_compare");
+					cell_d = row_d.insertCell(1);
+					cell_d.innerHTML = data[0].capital;	
+					
+					row_d = document.getElementById("population");
+					cell_d = row_d.insertCell(1);
+					cell_d.innerHTML = data[0].population;	
+					
+					row_d = document.getElementById("region");
+					cell_d = row_d.insertCell(1);
+					cell_d.innerHTML = data[0].region;
+					
+					row_d = document.getElementById("subregion");
+					cell_d = row_d.insertCell(1);
+					cell_d.innerHTML = data[0].subregion;	
+					
+					row_d = document.getElementById("timezones");
+					cell_d = row_d.insertCell(1);
+					var all_timezones = "";
+					for(var i = 0; i < data[0].timezones.length; i++){ //get all time zones
+						all_timezones = all_timezones + data[0].timezones[i] + ", ";
+					}
+					cell_d.innerHTML = all_timezones;
+					
+					row_d = document.getElementById("currencies");
+					cell_d = row_d.insertCell(1);
+					var all_currencies = "";
+					for(var i = 0; i < data[0].currencies.length; i++){ //get all time zones
+						all_currencies = all_currencies + data[0].currencies[i].name + " (" + data[0].currencies[i].symbol + ")" + ", ";
+					}				
+					cell_d.innerHTML = all_currencies;
+					
+					row_d = document.getElementById("languages");
+					cell_d = row_d.insertCell(1);
+					var all_languages = "";
+					for(var i = 0; i < data[0].currencies.length; i++){ //get all time zones
+						all_languages = all_languages + data[0].languages[i].name + " (" + data[0].languages[i].nativeName + ")" + ", ";
+					}				
+					cell_d.innerHTML = all_languages;
+					
+					row_d = document.getElementById("area");
+					cell_d = row_d.insertCell(1);
+					cell_d.innerHTML = data[0].area;						
+				}
+				else if(isCountry2 === 2){
+					row_d = document.getElementById("capital2");
+					cell_d = row_d.insertCell(0);
+					cell_d.innerHTML = data[0].capital;	
+					
+					row_d = document.getElementById("population2");
+					cell_d = row_d.insertCell(0);
+					cell_d.innerHTML = data[0].population;	
+					
+					row_d = document.getElementById("region2");
+					cell_d = row_d.insertCell(0);
+					cell_d.innerHTML = data[0].region;
+					
+					row_d = document.getElementById("subregion2");
+					cell_d = row_d.insertCell(0);
+					cell_d.innerHTML = data[0].subregion;	
+					
+					row_d = document.getElementById("timezones2");
+					cell_d = row_d.insertCell(0);
+					var all_timezones = "";
+					for(var i = 0; i < data[0].timezones.length; i++){ //get all time zones
+						all_timezones = all_timezones + data[0].timezones[i] + ", ";
+					}
+					cell_d.innerHTML = all_timezones;
+					
+					row_d = document.getElementById("currencies2");
+					cell_d = row_d.insertCell(0);
+					var all_currencies = "";
+					for(var i = 0; i < data[0].currencies.length; i++){ //get all time zones
+						all_currencies = all_currencies + data[0].currencies[i].name + " (" + data[0].currencies[i].symbol + ")" + ", ";
+					}				
+					cell_d.innerHTML = all_currencies;
+					
+					row_d = document.getElementById("languages2");
+					cell_d = row_d.insertCell(0);
+					var all_languages = "";
+					for(var i = 0; i < data[0].currencies.length; i++){ //get all time zones
+						all_languages = all_languages + data[0].languages[i].name + " (" + data[0].languages[i].nativeName + ")" + ", ";
+					}				
+					cell_d.innerHTML = all_languages;	
+
+					row_d = document.getElementById("area2");
+					cell_d = row_d.insertCell(0);
+					cell_d.innerHTML = data[0].area;					
+				}
+				else{
+					alert("Error");
+				}
+				
+
+				//alert(parseInt(document.getElementById("selection2").rows[1].cells[0].innerHTML,10));
+				if(document.getElementById("selection1").rows[0].cells.length === 2 &&  document.getElementById("selection2").rows[0].cells.length === 2){ //compare pop
+					if(parseInt(document.getElementById("selection1").rows[1].cells[1].innerHTML,10) > parseInt(document.getElementById("selection2").rows[1].cells[0].innerHTML,10)){
+						//alert("INDIA BIGGER");
+						document.getElementById("selection1").rows[1].cells[1].style.color = "#e60000";
+						document.getElementById("selection2").rows[1].cells[0].style.color = "#39ac39";
+					}
+					else{
+						document.getElementById("selection1").rows[1].cells[1].style.color = "#39ac39";
+						document.getElementById("selection2").rows[1].cells[0].style.color = "#e60000";					
+					}
+				}
+				if(document.getElementById("selection1").rows[0].cells.length === 2 &&  document.getElementById("selection2").rows[0].cells.length === 2){ //redundant if statement
+					if(parseInt(document.getElementById("selection1").rows[7].cells[1].innerHTML,10) > parseInt(document.getElementById("selection2").rows[7].cells[0].innerHTML,10)){
+						//alert("INDIA BIGGER");
+						document.getElementById("selection1").rows[7].cells[1].style.color = "#e60000";
+						document.getElementById("selection2").rows[7].cells[0].style.color = "#39ac39";
+					}
+					else{
+						document.getElementById("selection1").rows[7].cells[1].style.color = "#39ac39";
+						document.getElementById("selection2").rows[7].cells[0].style.color = "#e60000";					
+					}
+				}				
+				
+				
+				
+			}
+			
+			
+		</script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByqnvYEmVp7fNkiYtBEAtvGIb1WEtkFo0&callback=myMap"></script>		
+
+
+
+	</body>
+
+
+
+
+
+
+
+
+
+
+
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
