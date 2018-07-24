@@ -4,9 +4,6 @@ Web application that uses "Rest Countries" (API). Displays information for a cou
 # Accessing Web Application (NO LONGER HOSTED):
 Open home.html
 
-~~[Main Site](http://web.engr.oregonstate.edu/~rameshv/CountryInformation/CountryInformation/html_js/home.html)
-[Compare Countries Page](http://web.engr.oregonstate.edu/~rameshv/CountryInformation/CountryInformation/html_js/compare.html)
-
 # Screens
 ![alt text](screens/screen.png "Home view")
 ![alt text](screens/screen2.png "Detailed view")
